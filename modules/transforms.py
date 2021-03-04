@@ -1,13 +1,6 @@
 import torch
 import numpy as np
-
-class Normalizer():
-    def __call__(self, data):
-        img, mask = data
-        img = img.float()
-        img = (img - img.min()) / (img.max() - img.min())
-        img = img * 2 - 1
-        return (img, mask)
+import cv2
 
 class RandomCropper():
     def __init__(self, crop_dim):
@@ -65,4 +58,23 @@ class ToTensor():
 
         img = torch.tensor(img).unsqueeze(dim=0)
         mask = torch.tensor(mask).unsqueeze(dim=0)
+        return (img, mask)
+    
+class Normalizer():
+    def __call__(self, data):
+        img, mask = data
+        img = img.float()
+        # img = (img - img.min()) / (img.max() - img.min())
+        img = (img - 0) / (255 - 0)
+        img = img * 2 - 1
+        return (img, mask)
+    
+class Resize():
+    def __init__(self, resize_dim):
+        self.resize_dim = resize_dim
+        
+    def __call__(self, data):
+        img, mask = data
+        img = cv2.resize(img, self.resize_dim)
+        mask = cv2.resize(mask, self.resize_dim)
         return (img, mask)
